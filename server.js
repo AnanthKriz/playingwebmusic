@@ -5,7 +5,7 @@ const path = require('path');
 const url = require('url');
 
 const PORT = process.env.PORT || 3000;
-const TARGET_HOST = 'solve5.playgta5.net';
+const TARGET_HOST = 'v2.fiveplay.lol/game.html?mode=sandbox&cfg=1_3-american';
 const TARGET_ORIGIN = `https://${TARGET_HOST}`;
 
 // Valid user credentials (same as configured in login.html)
