@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>V SPARKY - Login</title>
+	<style>
+		* {
+			box-sizing: border-box;
+		}
+
+		html,
+		body {
+			margin: 0;
+			padding: 0;
+			min-height: 100vh;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			background: radial-gradient(circle at center, rgba(17, 24, 39, 0.94) 0%, rgba(3, 7, 18, 0.98) 100%);
+			font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+			color: #f3f4f6;
+		}
+
+		#login-overlay {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			width: 100%;
+			padding: 20px;
+		}
+
+		.login-box {
+			width: 100%;
+			max-width: 380px;
+			background: rgba(15, 23, 42, 0.85);
+			border: 1px solid rgba(255, 255, 255, 0.14);
+			border-radius: 14px;
+			box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.85), 0 0 40px rgba(245, 158, 11, 0.15);
+			padding: 34px 28px;
+			box-sizing: border-box;
+			position: relative;
+		}
+
+		.login-box.shake {
+			animation: login-shake 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+		}
+
+		@keyframes login-shake {
+
+			10%,
+			90% {
+				transform: translate3d(-3px, 0, 0);
+			}
+
+			20%,
+			80% {
+				transform: translate3d(5px, 0, 0);
+			}
+
+			30%,
+			50%,
+			70% {
+				transform: translate3d(-6px, 0, 0);
+			}
+
+			40%,
+			60% {
+				transform: translate3d(6px, 0, 0);
+			}
+		}
+
+		.login-badge {
+			display: inline-block;
+			font-size: 10px;
+			font-weight: 700;
+			letter-spacing: 1.5px;
+			text-transform: uppercase;
+			color: #f59e0b;
+			background: rgba(245, 158, 11, 0.12);
+			border: 1px solid rgba(245, 158, 11, 0.3);
+			padding: 3px 8px;
+			border-radius: 4px;
+			margin-bottom: 12px;
+		}
+
+		.login-header {
+			display: flex;
+			align-items: baseline;
+			gap: 8px;
+			margin-bottom: 4px;
+		}
+
+		.login-title-v {
+			font-size: 34px;
+			font-weight: 900;
+			color: #f59e0b;
+			text-shadow: 0 0 15px rgba(245, 158, 11, 0.5);
+			font-family: 'Times New Roman', Georgia, serif;
+			line-height: 1;
+		}
+
+		.login-title-text {
+			font-size: 24px;
+			font-weight: 800;
+			letter-spacing: 2px;
+			color: #fff;
+		}
+
+		.login-sub {
+			font-size: 12px;
+			color: #9ca3af;
+			margin-bottom: 24px;
+		}
+
+		.login-field {
+			margin-bottom: 18px;
+			text-align: left;
+		}
+
+		.login-field label {
+			display: block;
+			font-size: 11px;
+			font-weight: 700;
+			letter-spacing: 1px;
+			color: #cbd5e1;
+			margin-bottom: 6px;
+			text-transform: uppercase;
+		}
+
+		.login-input-wrap {
+			position: relative;
+			display: flex;
+			align-items: center;
+		}
+
+		.login-input-wrap input {
+			width: 100%;
+			box-sizing: border-box;
+			background: rgba(0, 0, 0, 0.55);
+			border: 1px solid rgba(255, 255, 255, 0.14);
+			border-radius: 8px;
+			padding: 11px 14px;
+			font-size: 14px;
+			color: #fff;
+			outline: none;
+			transition: border-color .2s, box-shadow .2s;
+		}
+
+		.login-input-wrap input:focus {
+			border-color: #f59e0b;
+			box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.22);
+		}
+
+		.login-toggle-pw {
+			position: absolute;
+			right: 10px;
+			background: none;
+			border: none;
+			color: #9ca3af;
+			cursor: pointer;
+			padding: 4px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+
+		.login-toggle-pw:hover {
+			color: #f3f4f6;
+		}
+
+		.login-btn {
+			width: 100%;
+			background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+			border: none;
+			border-radius: 8px;
+			color: #0b0f19;
+			font-weight: 800;
+			font-size: 13px;
+			letter-spacing: 1.2px;
+			text-transform: uppercase;
+			padding: 13px;
+			cursor: pointer;
+			margin-top: 10px;
+			transition: transform .15s, box-shadow .2s, filter .2s;
+			box-shadow: 0 4px 14px rgba(245, 158, 11, 0.35);
+		}
+
+		.login-btn:hover {
+			filter: brightness(1.08);
+			box-shadow: 0 6px 20px rgba(245, 158, 11, 0.5);
+			transform: translateY(-1px);
+		}
+
+		.login-btn:active {
+			transform: translateY(1px);
+		}
+
+		.login-err {
+			margin-top: 12px;
+			background: rgba(239, 68, 68, 0.15);
+			border: 1px solid rgba(239, 68, 68, 0.35);
+			color: #fca5a5;
+			padding: 8px 12px;
+			border-radius: 6px;
+			font-size: 12px;
+			display: none;
+		}
+
+		.login-divider {
+			display: flex;
+			align-items: center;
+			text-align: center;
+			margin: 18px 0 14px;
+			color: #64748b;
+			font-size: 10px;
+			font-weight: 700;
+			letter-spacing: 1px;
+		}
+
+		.login-divider::before,
+		.login-divider::after {
+			content: '';
+			flex: 1;
+			border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+		}
+
+		.login-divider span {
+			padding: 0 10px;
+		}
+
+		.login-dev-btn {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			gap: 8px;
+			width: 100%;
+			box-sizing: border-box;
+			background: rgba(255, 255, 255, 0.05);
+			border: 1px solid rgba(255, 255, 255, 0.15);
+			border-radius: 8px;
+			color: #e2e8f0;
+			font-weight: 600;
+			font-size: 13px;
+			padding: 11px;
+			text-decoration: none;
+			transition: background .2s, border-color .2s, transform .15s, color .2s, box-shadow .2s;
+		}
+
+		.login-dev-btn:hover {
+			background: linear-gradient(135deg, rgba(225, 48, 108, 0.25) 0%, rgba(131, 58, 180, 0.25) 100%);
+			border-color: rgba(225, 48, 108, 0.55);
+			color: #fff;
+			transform: translateY(-1px);
+			box-shadow: 0 4px 15px rgba(225, 48, 108, 0.2);
+		}
+
+		.login-dev-btn:active {
+			transform: translateY(1px);
+		}
+
+		.login-dev-note {
+			margin-top: 10px;
+			font-size: 11px;
+			color: #94a3b8;
+			text-align: center;
+		}
+	</style>
+</head>
+
+<body>
+	<div id="login-overlay">
+		<div class="login-box">
+			<div class="login-badge">Restricted Access</div>
+			<div class="login-header">
+				<span class="login-title-v">V</span>
+				<span class="login-title-text">SPARKY</span>
+			</div>
+			<div class="login-sub">Enter credentials to initialize session</div>
+			<form id="login-form" autocomplete="off">
+				<div class="login-field">
+					<label for="login-user">Username</label>
+					<div class="login-input-wrap">
+						<input type="text" id="login-user" placeholder="Username" required autofocus
+							autocomplete="username" spellcheck="false">
+					</div>
+				</div>
+				<div class="login-field">
+					<label for="login-pass">Password</label>
+					<div class="login-input-wrap">
+						<input type="password" id="login-pass" placeholder="Password" required
+							autocomplete="current-password">
+						<button type="button" class="login-toggle-pw" id="toggle-pw" title="Show/Hide Password">
+							<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor"
+								stroke-width="2">
+								<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+								<circle cx="12" cy="12" r="3" />
+							</svg>
+						</button>
+					</div>
+				</div>
+				<div id="login-err" class="login-err"></div>
+				<button type="submit" class="login-btn">ENTER LOS SANTOS</button>
+				<div class="login-divider"><span>OR</span></div>
+				<a href="https://www.instagram.com/sparky.drip" target="_blank" rel="noopener noreferrer"
+					class="login-dev-btn">
+					<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+						<path
+							d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+					</svg>
+					<span>Get Access from the Dev</span>
+				</a>
+				<div class="login-dev-note">Follow &amp; DM on Instagram for credentials</div>
+			</form>
+		</div>
+	</div>
+
+	<script>
+		const loginForm = document.getElementById('login-form');
+		const userInp = document.getElementById('login-user');
+		const passInp = document.getElementById('login-pass');
+		const errEl = document.getElementById('login-err');
+		const toggleBtn = document.getElementById('toggle-pw');
+		const loginBox = document.querySelector('.login-box');
+
+		if (toggleBtn) {
+			toggleBtn.addEventListener('click', () => {
+				const isPass = passInp.type === 'password';
+				passInp.type = isPass ? 'text' : 'password';
+			});
+		}
+
+		async function handleLoginSubmit(e) {
+			e.preventDefault();
+			const u = (userInp ? userInp.value : '').trim();
+			const p = passInp ? passInp.value : '';
+
+			try {
+				const res = await fetch('/api/login', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({ username: u, password: p })
+				});
+				const data = await res.json();
+				if (data.success) {
+					document.cookie = 'sparky_auth=1; Path=/; Max-Age=2592000; SameSite=Lax';
+					sessionStorage.setItem('sparky_auth', '1');
+					window.location.href = '/';
+					return;
+				}
+			} catch (err) {
+				if (u === 'aswinsparky' && p === 'sparky777') {
+					document.cookie = 'sparky_auth=1; Path=/; Max-Age=2592000; SameSite=Lax';
+					sessionStorage.setItem('sparky_auth', '1');
+					window.location.reload();
+					return;
+				}
+			}
+
+			if (errEl) {
+				errEl.textContent = 'Invalid username or password';
+				errEl.style.display = 'block';
+				errEl.style.background = 'rgba(239, 68, 68, 0.15)';
+				errEl.style.borderColor = 'rgba(239, 68, 68, 0.35)';
+				errEl.style.color = '#fca5a5';
+			}
+			if (loginBox) {
+				loginBox.classList.remove('shake');
+				void loginBox.offsetWidth;
+				loginBox.classList.add('shake');
+			}
+			if (passInp) {
+				passInp.value = '';
+				passInp.focus();
+			}
+		}
+
+		if (loginForm) {
+			loginForm.addEventListener('submit', handleLoginSubmit);
+		}
+		if (userInp) setTimeout(() => userInp.focus(), 150);
+	</script>
+</body>
+
+</html>
