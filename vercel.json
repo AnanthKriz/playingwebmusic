@@ -7,11 +7,15 @@
     },
     {
       "source": "/",
-      "destination": "https://v2.fiveplay.lol/game.html?mode=sandbox&cfg=1_3-american"
+      "destination": "/login.html"
+    },
+    {
+      "source": "/login",
+      "destination": "/login.html"
     },
     {
       "source": "/(.*)",
-      "destination": "https://v2.fiveplay.lol/:match*"
+      "destination": "https://v2.fiveplay.lol/$1"
     }
   ]
 }

@@ -46,7 +46,7 @@ const server = http.createServer((req, res) => {
             'Content-Type': 'application/json',
             'Set-Cookie': 'sparky_auth=1; Path=/; HttpOnly; SameSite=Lax; Max-Age=2592000'
           });
-          return res.end(JSON.stringify({ success: true }));
+          return res.end(JSON.stringify({ success: true, user: VALID_USER }));
         }
       } catch (e) {
         // Fallback for form-urlencoded or malformed input
@@ -55,6 +55,13 @@ const server = http.createServer((req, res) => {
       return res.end(JSON.stringify({ success: false, message: 'Invalid credentials' }));
     });
     return;
+  }
+
+  // Session check endpoint
+  if (req.method === 'GET' && parsedUrl.pathname === '/api/session') {
+    const authed = isAuthenticated(req);
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    return res.end(JSON.stringify({ authenticated: authed, user: authed ? VALID_USER : null }));
   }
 
   // Logout endpoint
@@ -66,44 +73,25 @@ const server = http.createServer((req, res) => {
     return res.end();
   }
 
-  // Check if authenticated
+  // ALWAYS serve login page for root "/" and "/login" first
+  if (parsedUrl.pathname === '/' || parsedUrl.pathname === '/login') {
+    const loginHtmlPath = path.join(__dirname, 'login.html');
+    fs.readFile(loginHtmlPath, 'utf8', (err, data) => {
+      if (err) {
+        res.writeHead(500, { 'Content-Type': 'text/plain' });
+        return res.end('Error loading login page');
+      }
+      res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+      res.end(data);
+    });
+    return;
+  }
+
+  // Check if authenticated before ANY game route or asset is accessed
   const authed = isAuthenticated(req);
-
-  // If not authenticated and trying to load a page, serve login.html
   if (!authed) {
-    // Only serve login for non-asset routes or root
-    if (parsedUrl.pathname === '/' || parsedUrl.pathname === '/login' || parsedUrl.pathname.endsWith('.html')) {
-      const loginHtmlPath = path.join(__dirname, 'login.html');
-      fs.readFile(loginHtmlPath, 'utf8', (err, data) => {
-        if (err) {
-          res.writeHead(500, { 'Content-Type': 'text/plain' });
-          return res.end('Error loading login page');
-        }
-        res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
-        res.end(data);
-      });
-      return;
-    } else {
-      // Prompt redirect to login for protected assets
-      res.writeHead(302, { 'Location': '/' });
-      return res.end();
-    }
-  }
-
-  // If requesting root "/" or "/game.html" without parameters, redirect to the main game URL
-  if (parsedUrl.pathname === '/') {
-    const params = new URLSearchParams(parsedUrl.search);
-    if (!params.has('mode')) params.set('mode', 'sandbox');
-    if (!params.has('cfg')) params.set('cfg', '1_3-american');
-    res.writeHead(302, { 'Location': `/game.html?${params.toString()}` });
-    return res.end();
-  }
-
-  if (parsedUrl.pathname === '/game.html' && (!parsedUrl.search || !parsedUrl.searchParams.has('mode'))) {
-    const params = new URLSearchParams(parsedUrl.search);
-    if (!params.has('mode')) params.set('mode', 'sandbox');
-    if (!params.has('cfg')) params.set('cfg', '1_3-american');
-    res.writeHead(302, { 'Location': `/game.html?${params.toString()}` });
+    // If not authenticated, redirect to login page
+    res.writeHead(302, { 'Location': '/' });
     return res.end();
   }
 

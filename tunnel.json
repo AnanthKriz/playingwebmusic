@@ -1,8 +1,16 @@
 {
   "routes": [
     {
+      "src": "/api/(.*)",
+      "dest": "/api/$1"
+    },
+    {
       "src": "/",
-      "dest": "https://v2.fiveplay.lol/game.html?mode=sandbox&cfg=1_3-american"
+      "dest": "/login.html"
+    },
+    {
+      "src": "/login",
+      "dest": "/login.html"
     },
     {
       "src": "/(.*)",
