@@ -613,18 +613,29 @@
 			transition: all 0.2s;
 		}
 
-		.dev-btn:hover {
-			background: linear-gradient(135deg, rgba(225, 48, 108, 0.2) 0%, rgba(131, 58, 180, 0.2) 100%);
-			border-color: rgba(225, 48, 108, 0.45);
+		.dev-btn.tele-btn {
+			background: linear-gradient(135deg, rgba(14, 165, 233, 0.18) 0%, rgba(2, 132, 199, 0.28) 100%);
+			border-color: rgba(56, 189, 248, 0.45);
+			color: #e0f2fe;
+			font-weight: 700;
+			letter-spacing: 0.8px;
+			padding: 12px 16px;
+			box-shadow: 0 4px 18px rgba(14, 165, 233, 0.25);
+		}
+
+		.dev-btn.tele-btn:hover {
+			background: linear-gradient(135deg, rgba(14, 165, 233, 0.35) 0%, rgba(2, 132, 199, 0.5) 100%);
+			border-color: #38bdf8;
 			color: #fff;
-			transform: translateY(-1px);
-			box-shadow: 0 4px 16px rgba(225, 48, 108, 0.25);
+			transform: translateY(-2px);
+			box-shadow: 0 6px 24px rgba(14, 165, 233, 0.45);
 		}
 
 		.dev-note {
 			margin-top: 8px;
 			font-size: 11px;
-			color: #64748b;
+			color: #94a3b8;
+			line-height: 1.4;
 		}
 
 		/* Card Shake Animation */
@@ -687,7 +698,7 @@
 
 			<!-- Active Session Notification (if already logged in) -->
 			<div id="session-banner" class="session-badge">
-				<span>Authorized: <strong id="session-user">aswinsparky</strong></span>
+				<span>Authorized: <strong id="session-user">Operator</strong></span>
 				<a href="/logout" class="logout-link">Logout</a>
 			</div>
 
@@ -707,7 +718,7 @@
 						<span>⚡</span>
 						<span>SANDBOX</span>
 					</div>
-					<div class="mode-desc">Full spawner, custom cars &amp; sandbox sandbox tools</div>
+					<div class="mode-desc">Full spawner, custom cars &amp; sandbox tools</div>
 					<div class="mode-radio-check">
 						<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="4">
 							<polyline points="20 6 9 17 4 12"></polyline>
@@ -744,7 +755,7 @@
 								<circle cx="12" cy="7" r="4"></circle>
 							</svg>
 						</span>
-						<input type="text" id="login-user" class="input-field" placeholder="Enter username" required autofocus
+						<input type="text" id="login-user" class="input-field" placeholder="Enter username from bot" required autofocus
 							autocomplete="username" spellcheck="false">
 					</div>
 				</div>
@@ -758,7 +769,7 @@
 								<path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
 							</svg>
 						</span>
-						<input type="password" id="login-pass" class="input-field" placeholder="Enter password" required
+						<input type="password" id="login-pass" class="input-field" placeholder="Enter password (min 6 chars)" required
 							autocomplete="current-password">
 						<button type="button" class="toggle-pw-btn" id="toggle-pw" title="Show/Hide Password">
 							<svg id="eye-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
@@ -798,16 +809,18 @@
 				</div>
 			</form>
 
-			<!-- Footer & Developer DM -->
+			<!-- Telegram Access Section -->
 			<div class="footer-section">
-				<div class="divider"><span>OR GET ACCESS</span></div>
-				<a href="https://www.instagram.com/sparky.drip" target="_blank" rel="noopener noreferrer" class="dev-btn">
-					<svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor">
-						<path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+				<div class="divider"><span>NEED ACCESS CREDENTIALS?</span></div>
+				<a id="tele-bot-btn" href="https://t.me/sparky_access_bot" target="_blank" rel="noopener noreferrer" class="dev-btn tele-btn">
+					<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+						<path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.161c-.18.894-.962 4.604-1.36 6.744-.168.905-.5 1.208-.82 1.237-.697.064-1.226-.46-1.901-.902-1.056-.693-1.653-1.124-2.678-1.799-1.185-.781-.417-1.21.258-1.912.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635.099-.002.321.023.465.14.121.098.155.231.171.326.016.096.036.313.02.483z"/>
 					</svg>
-					<span>DM @sparky.drip on Instagram</span>
+					<span>GET 3-DAY ACCESS KEY (TELEGRAM)</span>
 				</a>
-				<div class="dev-note">Follow &amp; message developer for access credentials</div>
+				<div class="dev-note">
+					Start the Telegram bot, follow our channel &amp; developer to generate your 3-day username and password.
+				</div>
 			</div>
 
 		</div>
@@ -839,9 +852,24 @@
 		const cardStory = document.getElementById('mode-story');
 		const sessionBanner = document.getElementById('session-banner');
 		const sessionUser = document.getElementById('session-user');
+		const teleBotBtn = document.getElementById('tele-bot-btn');
 
 		const quickSandboxBtn = document.getElementById('quick-launch-sandbox');
 		const quickStoryBtn = document.getElementById('quick-launch-story');
+
+		// Load public server config (Telegram bot link)
+		async function loadConfig() {
+			try {
+				const res = await fetch('/api/config');
+				if (res.ok) {
+					const cfg = await res.json();
+					if (cfg.telegramBotUrl && teleBotBtn) {
+						teleBotBtn.href = cfg.telegramBotUrl;
+					}
+				}
+			} catch (e) {}
+		}
+		loadConfig();
 
 		// Mode switching function
 		function setMode(mode) {
@@ -879,47 +907,40 @@
 			});
 		}
 
-		// Check if already authenticated via session API or cookie
+		// Check if already authenticated via session API
 		async function checkExistingSession() {
 			try {
 				const res = await fetch('/api/session');
 				if (res.ok) {
 					const data = await res.json();
-					if (data.authenticated) {
+					if (data.authenticated && data.user) {
 						if (sessionBanner) sessionBanner.style.display = 'flex';
-						if (sessionUser) sessionUser.textContent = data.user || 'aswinsparky';
-						if (userInp) userInp.value = data.user || 'aswinsparky';
-						if (passInp) passInp.value = '••••••••';
+						if (sessionUser) sessionUser.textContent = data.user;
 					}
 				}
-			} catch (e) {
-				// Standalone or offline fallback
-				if (document.cookie.includes('sparky_auth=1')) {
-					if (sessionBanner) sessionBanner.style.display = 'flex';
-					if (userInp) userInp.value = 'aswinsparky';
-					if (passInp) passInp.value = 'sparky777';
-				}
-			}
+			} catch (e) {}
 		}
 		checkExistingSession();
 
-		// Handle Form Launch
+		// Handle Form Launch (MongoDB authentication)
 		async function handleLaunch(targetMode) {
 			if (targetMode) setMode(targetMode);
 
 			const u = (userInp ? userInp.value : '').trim();
 			const p = passInp ? passInp.value : '';
 
-			// If already authenticated and password field wasn't edited
-			if (document.cookie.includes('sparky_auth=1') && (p === '••••••••' || p === 'sparky777' || !p)) {
-				window.location.href = targetUrls[selectedMode];
+			if (!u || !p) {
+				if (errEl) {
+					errText.textContent = 'Please enter both username and password';
+					errEl.style.display = 'flex';
+				}
 				return;
 			}
 
 			// Visual loading feedback
 			launchBtn.disabled = true;
 			const prevText = launchText.textContent;
-			launchText.textContent = 'INITIALIZING LOS SANTOS...';
+			launchText.textContent = 'VERIFYING CREDENTIALS...';
 
 			try {
 				const res = await fetch('/api/login', {
@@ -930,36 +951,30 @@
 				const data = await res.json();
 
 				if (data.success) {
-					document.cookie = 'sparky_auth=1; Path=/; Max-Age=2592000; SameSite=Lax';
+					document.cookie = 'sparky_auth=1; Path=/; Max-Age=259200; SameSite=Lax';
 					sessionStorage.setItem('sparky_auth', '1');
+					sessionStorage.setItem('sparky_user', data.user);
 					window.location.href = targetUrls[selectedMode];
 					return;
+				} else {
+					throw new Error(data.message || 'Invalid username or password');
 				}
 			} catch (err) {
-				// Local/offline fallback test
-				if (u === 'aswinsparky' && p === 'sparky777') {
-					document.cookie = 'sparky_auth=1; Path=/; Max-Age=2592000; SameSite=Lax';
-					sessionStorage.setItem('sparky_auth', '1');
-					window.location.href = targetUrls[selectedMode];
-					return;
+				launchBtn.disabled = false;
+				launchText.textContent = prevText;
+				if (errEl) {
+					errText.textContent = err.message || 'Access Denied: Invalid credentials';
+					errEl.style.display = 'flex';
 				}
-			}
-
-			// Show Error
-			launchBtn.disabled = false;
-			launchText.textContent = prevText;
-			if (errEl) {
-				errText.textContent = 'Access Denied: Invalid credentials';
-				errEl.style.display = 'flex';
-			}
-			if (loginBox) {
-				loginBox.classList.remove('shake');
-				void loginBox.offsetWidth;
-				loginBox.classList.add('shake');
-			}
-			if (passInp) {
-				passInp.value = '';
-				passInp.focus();
+				if (loginBox) {
+					loginBox.classList.remove('shake');
+					void loginBox.offsetWidth;
+					loginBox.classList.add('shake');
+				}
+				if (passInp) {
+					passInp.value = '';
+					passInp.focus();
+				}
 			}
 		}
 

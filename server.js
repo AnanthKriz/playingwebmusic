@@ -1,17 +1,21 @@
+require('dotenv').config();
 const http = require('http');
 const https = require('https');
 const fs = require('fs');
 const path = require('path');
 const url = require('url');
 
+const { connectDB, verifyCredentials } = require('./db');
+const { startTelegramBot } = require('./bot');
+
+// Connect to MongoDB and start Telegram Bot
+connectDB();
+startTelegramBot();
+
 const PORT = process.env.PORT || 3000;
 const TARGET_HOST = 'v2.fiveplay.lol';
 const TARGET_ORIGIN = `https://${TARGET_HOST}`;
 const DEFAULT_GAME_PATH = '/game.html?mode=sandbox&cfg=1_3-american';
-
-// Valid user credentials (same as configured in login.html)
-const VALID_USER = 'aswinsparky';
-const VALID_PASS = 'sparky777';
 
 function parseCookies(cookieHeader) {
   const list = {};
@@ -31,28 +35,40 @@ function isAuthenticated(req) {
   return cookies['sparky_auth'] === '1';
 }
 
-const server = http.createServer((req, res) => {
+const server = http.createServer(async (req, res) => {
   const parsedUrl = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
 
-  // Endpoint to handle login authentication
+  // Endpoint to handle login authentication via MongoDB
   if (req.method === 'POST' && parsedUrl.pathname === '/api/login') {
     let body = '';
     req.on('data', chunk => { body += chunk; });
-    req.on('end', () => {
+    req.on('end', async () => {
       try {
         const { username, password } = JSON.parse(body);
-        if (username === VALID_USER && password === VALID_PASS) {
+        const auth = await verifyCredentials(username, password);
+
+        if (auth.valid) {
           res.writeHead(200, {
             'Content-Type': 'application/json',
-            'Set-Cookie': 'sparky_auth=1; Path=/; HttpOnly; SameSite=Lax; Max-Age=2592000'
+            'Set-Cookie': [
+              'sparky_auth=1; Path=/; HttpOnly; SameSite=Lax; Max-Age=259200',
+              `sparky_user=${encodeURIComponent(auth.user.username)}; Path=/; SameSite=Lax; Max-Age=259200`
+            ]
           });
-          return res.end(JSON.stringify({ success: true, user: VALID_USER }));
+          return res.end(JSON.stringify({
+            success: true,
+            user: auth.user.username,
+            expiresAt: auth.user.expiresAt,
+            daysRemaining: auth.user.daysRemaining
+          }));
         }
+
+        res.writeHead(401, { 'Content-Type': 'application/json' });
+        return res.end(JSON.stringify({ success: false, message: auth.error }));
       } catch (e) {
-        // Fallback for form-urlencoded or malformed input
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        return res.end(JSON.stringify({ success: false, message: 'Invalid request body' }));
       }
-      res.writeHead(401, { 'Content-Type': 'application/json' });
-      return res.end(JSON.stringify({ success: false, message: 'Invalid credentials' }));
     });
     return;
   }
@@ -60,14 +76,32 @@ const server = http.createServer((req, res) => {
   // Session check endpoint
   if (req.method === 'GET' && parsedUrl.pathname === '/api/session') {
     const authed = isAuthenticated(req);
+    const cookies = parseCookies(req.headers.cookie);
     res.writeHead(200, { 'Content-Type': 'application/json' });
-    return res.end(JSON.stringify({ authenticated: authed, user: authed ? VALID_USER : null }));
+    return res.end(JSON.stringify({
+      authenticated: authed,
+      user: authed ? (cookies['sparky_user'] || 'Operator') : null
+    }));
+  }
+
+  // Public config endpoint (Telegram bot URL & Instagram)
+  if (req.method === 'GET' && parsedUrl.pathname === '/api/config') {
+    const botUser = process.env.TELEGRAM_BOT_USERNAME || 'sparky_access_bot';
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    return res.end(JSON.stringify({
+      telegramBotUrl: `https://t.me/${botUser.replace('@', '')}`,
+      telegramChannelUrl: process.env.TELEGRAM_CHANNEL_URL || 'https://t.me/sparky_channel',
+      instagramUrl: process.env.INSTAGRAM_URL || 'https://www.instagram.com/sparky.drip'
+    }));
   }
 
   // Logout endpoint
   if (parsedUrl.pathname === '/logout') {
     res.writeHead(302, {
-      'Set-Cookie': 'sparky_auth=0; Path=/; HttpOnly; Max-Age=0',
+      'Set-Cookie': [
+        'sparky_auth=0; Path=/; HttpOnly; Max-Age=0',
+        'sparky_user=; Path=/; Max-Age=0'
+      ],
       'Location': '/'
     });
     return res.end();
