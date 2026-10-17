@@ -25,14 +25,32 @@ function parseCookies(cookieHeader) {
     name = name?.trim();
     if (!name) return;
     const value = rest.join('=').trim();
-    list[name] = decodeURIComponent(value);
+    try {
+      list[name] = decodeURIComponent(value);
+    } catch (e) {
+      list[name] = value;
+    }
   });
   return list;
 }
 
 function isAuthenticated(req) {
-  const cookies = parseCookies(req.headers.cookie);
-  return cookies['sparky_auth'] === '1';
+  if (!req || !req.headers) return false;
+  const cookieHeader = req.headers.cookie;
+  if (!cookieHeader) return false;
+
+  // Direct regex check: robust against encoding and malformed cookies from upstream/third-party scripts
+  if (/(?:^|;\s*)sparky_auth=(?:1|"1"|true)(?:;|$)/i.test(cookieHeader)) {
+    return true;
+  }
+
+  try {
+    const cookies = parseCookies(cookieHeader);
+    const auth = String(cookies['sparky_auth'] || '').replace(/^["']|["']$/g, '');
+    return auth === '1' || auth === 'true';
+  } catch (e) {
+    return false;
+  }
 }
 
 const server = http.createServer(async (req, res) => {
@@ -48,11 +66,12 @@ const server = http.createServer(async (req, res) => {
         const auth = await verifyCredentials(username, password);
 
         if (auth.valid) {
+          const cookieExpireDate = new Date(Date.now() + 259200 * 1000).toUTCString();
           res.writeHead(200, {
             'Content-Type': 'application/json',
             'Set-Cookie': [
-              'sparky_auth=1; Path=/; HttpOnly; SameSite=Lax; Max-Age=259200',
-              `sparky_user=${encodeURIComponent(auth.user.username)}; Path=/; SameSite=Lax; Max-Age=259200`
+              `sparky_auth=1; Path=/; HttpOnly; SameSite=Lax; Max-Age=259200; Expires=${cookieExpireDate}`,
+              `sparky_user=${encodeURIComponent(auth.user.username)}; Path=/; SameSite=Lax; Max-Age=259200; Expires=${cookieExpireDate}`
             ]
           });
           return res.end(JSON.stringify({
@@ -115,8 +134,14 @@ const server = http.createServer(async (req, res) => {
         res.writeHead(500, { 'Content-Type': 'text/plain' });
         return res.end('Error loading login page');
       }
+      const authed = isAuthenticated(req);
+      const cookies = parseCookies(req.headers.cookie);
+      const user = authed ? (cookies['sparky_user'] || 'Operator') : null;
+      const initialSessionScript = `<script>window.__INITIAL_SESSION__ = ${JSON.stringify({ authenticated: authed, user })};</script>`;
+      const renderedHtml = data.replace('</head>', `${initialSessionScript}\n</head>`);
+
       res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
-      res.end(data);
+      res.end(renderedHtml);
     });
     return;
   }

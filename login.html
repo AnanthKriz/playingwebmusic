@@ -436,31 +436,136 @@
 			gap: 8px;
 		}
 
-		/* Active Session Card (If already logged in) */
-		.session-badge {
+		/* Active Session Card */
+		.active-session-card {
 			display: none;
-			margin-bottom: 18px;
-			padding: 10px 14px;
-			background: rgba(16, 185, 129, 0.12);
-			border: 1px solid rgba(16, 185, 129, 0.3);
-			border-radius: 10px;
-			font-size: 12px;
-			color: #6ee7b7;
-			justify-content: space-between;
-			align-items: center;
+			background: linear-gradient(135deg, rgba(16, 185, 129, 0.14) 0%, rgba(6, 182, 212, 0.12) 100%);
+			border: 1px solid rgba(52, 211, 153, 0.35);
+			border-radius: 14px;
+			padding: 14px 16px;
+			margin-bottom: 20px;
+			box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.2),
+						inset 0 1px 0 rgba(255, 255, 255, 0.15);
+			animation: fadeInCard 0.25s ease-out;
 		}
 
-		.session-badge .logout-link {
-			color: #fca5a5;
-			text-decoration: none;
-			font-weight: 700;
+		@keyframes fadeInCard {
+			from { opacity: 0; transform: translateY(-4px); }
+			to { opacity: 1; transform: translateY(0); }
+		}
+
+		.session-card-inner {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: 12px;
+		}
+
+		.session-user-info {
+			display: flex;
+			align-items: center;
+			gap: 12px;
+		}
+
+		.session-avatar {
+			width: 42px;
+			height: 42px;
+			border-radius: 10px;
+			background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-size: 20px;
+			box-shadow: 0 0 16px rgba(16, 185, 129, 0.45);
+			flex-shrink: 0;
+		}
+
+		.session-details {
+			display: flex;
+			flex-direction: column;
+			gap: 2px;
+			text-align: left;
+		}
+
+		.session-badge-pill {
+			display: inline-flex;
+			align-items: center;
+			gap: 6px;
+			font-size: 10px;
+			font-weight: 800;
+			letter-spacing: 0.8px;
+			text-transform: uppercase;
+			color: #34d399;
+		}
+
+		.session-badge-dot {
+			width: 6px;
+			height: 6px;
+			border-radius: 50%;
+			background: #10b981;
+			box-shadow: 0 0 8px #10b981;
+			animation: pulse 1.5s infinite;
+		}
+
+		.session-username-val {
+			font-size: 16px;
+			font-weight: 800;
+			font-family: var(--font-heading);
+			letter-spacing: 1.2px;
+			color: #ffffff;
+			text-shadow: 0 2px 6px rgba(0,0,0,0.6);
+		}
+
+		.session-validity-text {
 			font-size: 11px;
+			color: #94a3b8;
+		}
+
+		.session-actions {
+			display: flex;
+			flex-direction: column;
+			align-items: flex-end;
+			gap: 6px;
+		}
+
+		.switch-btn {
+			background: rgba(255, 255, 255, 0.08);
+			border: 1px solid rgba(255, 255, 255, 0.18);
+			color: #e2e8f0;
+			padding: 4px 10px;
+			border-radius: 6px;
+			font-size: 11px;
+			font-weight: 700;
+			letter-spacing: 0.6px;
+			text-transform: uppercase;
+			cursor: pointer;
+			transition: all 0.2s;
+		}
+
+		.switch-btn:hover {
+			background: rgba(255, 255, 255, 0.2);
+			color: #fff;
+			border-color: rgba(255, 255, 255, 0.35);
+			transform: translateY(-1px);
+		}
+
+		.logout-btn-link {
+			color: #f87171;
+			font-size: 11px;
+			font-weight: 700;
+			text-decoration: none;
 			letter-spacing: 0.5px;
 			text-transform: uppercase;
+			transition: color 0.2s;
 		}
 
-		.session-badge .logout-link:hover {
+		.logout-btn-link:hover {
+			color: #ef4444;
 			text-decoration: underline;
+		}
+
+		#credentials-fields {
+			transition: all 0.25s ease;
 		}
 
 		/* Main Launch Button */
@@ -696,10 +801,25 @@
 				<div class="brand-sub">Grand Theft Auto V · Web Portal</div>
 			</div>
 
-			<!-- Active Session Notification (if already logged in) -->
-			<div id="session-banner" class="session-badge">
-				<span>Authorized: <strong id="session-user">Operator</strong></span>
-				<a href="/logout" class="logout-link">Logout</a>
+			<!-- Active Session Card (Displayed when session is active; credentials hidden) -->
+			<div id="active-session-card" class="active-session-card">
+				<div class="session-card-inner">
+					<div class="session-user-info">
+						<div class="session-avatar">⚡</div>
+						<div class="session-details">
+							<div class="session-badge-pill">
+								<span class="session-badge-dot"></span>
+								<span>SESSION ACTIVE · 3 DAYS</span>
+							</div>
+							<div class="session-username-val" id="session-username-display">Operator</div>
+							<div class="session-validity-text">Credentials verified · Ready to launch</div>
+						</div>
+					</div>
+					<div class="session-actions">
+						<button type="button" class="switch-btn" id="switch-account-btn" title="Log in with another username">Switch</button>
+						<a href="/logout" class="logout-btn-link">Logout</a>
+					</div>
+				</div>
 			</div>
 
 			<!-- Mode Selector -->
@@ -746,37 +866,41 @@
 
 			<!-- Login Form -->
 			<form id="login-form" autocomplete="off">
-				<div class="input-group">
-					<label class="input-label" for="login-user">Operator ID / Username</label>
-					<div class="input-wrap">
-						<span class="input-icon">
-							<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-								<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-								<circle cx="12" cy="7" r="4"></circle>
-							</svg>
-						</span>
-						<input type="text" id="login-user" class="input-field" placeholder="Enter username from bot" required autofocus
-							autocomplete="username" spellcheck="false">
+				
+				<!-- Credentials Inputs (Completely hidden when session is active!) -->
+				<div id="credentials-fields">
+					<div class="input-group">
+						<label class="input-label" for="login-user">Operator ID / Username</label>
+						<div class="input-wrap">
+							<span class="input-icon">
+								<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+									<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+									<circle cx="12" cy="7" r="4"></circle>
+								</svg>
+							</span>
+							<input type="text" id="login-user" class="input-field" placeholder="Enter username from bot" required autofocus
+								autocomplete="username" spellcheck="false">
+						</div>
 					</div>
-				</div>
 
-				<div class="input-group">
-					<label class="input-label" for="login-pass">Access Key / Password</label>
-					<div class="input-wrap">
-						<span class="input-icon">
-							<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-								<rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-								<path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-							</svg>
-						</span>
-						<input type="password" id="login-pass" class="input-field" placeholder="Enter password (min 6 chars)" required
-							autocomplete="current-password">
-						<button type="button" class="toggle-pw-btn" id="toggle-pw" title="Show/Hide Password">
-							<svg id="eye-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
-								<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-								<circle cx="12" cy="12" r="3" />
-							</svg>
-						</button>
+					<div class="input-group">
+						<label class="input-label" for="login-pass">Access Key / Password</label>
+						<div class="input-wrap">
+							<span class="input-icon">
+								<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+									<rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+									<path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+								</svg>
+							</span>
+							<input type="password" id="login-pass" class="input-field" placeholder="Enter password (min 6 chars)" required
+								autocomplete="current-password">
+							<button type="button" class="toggle-pw-btn" id="toggle-pw" title="Show/Hide Password">
+								<svg id="eye-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+									<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+									<circle cx="12" cy="12" r="3" />
+								</svg>
+							</button>
+						</div>
 					</div>
 				</div>
 
@@ -793,7 +917,7 @@
 				<!-- Main Launch Button -->
 				<button type="submit" class="launch-btn" id="launch-submit-btn">
 					<span id="launch-icon">⚡</span>
-					<span id="launch-btn-text">ENTER SANDBOX MODE</span>
+					<span id="launch-btn-text">LAUNCH SANDBOX</span>
 				</button>
 
 				<!-- Dual Quick Buttons -->
@@ -809,8 +933,8 @@
 				</div>
 			</form>
 
-			<!-- Telegram Access Section -->
-			<div class="footer-section">
+			<!-- Telegram Access Section (Only shown when not logged in) -->
+			<div id="access-help-section" class="footer-section">
 				<div class="divider"><span>NEED ACCESS CREDENTIALS?</span></div>
 				<a id="tele-bot-btn" href="https://t.me/sparky_access_bot" target="_blank" rel="noopener noreferrer" class="dev-btn tele-btn">
 					<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
@@ -827,8 +951,12 @@
 	</div>
 
 	<script>
-		// State
+
+		// Session & Mode State
 		let selectedMode = 'sandbox'; // 'sandbox' | 'story'
+		let hasActiveSession = false;
+		let activeUsername = '';
+
 		const targetUrls = {
 			sandbox: '/game.html?mode=sandbox&cfg=1_3-american',
 			story: '/game.html?mode=story&cfg=1_3-american'
@@ -836,6 +964,11 @@
 
 		// DOM Elements
 		const loginForm = document.getElementById('login-form');
+		const credentialsFields = document.getElementById('credentials-fields');
+		const activeSessionCard = document.getElementById('active-session-card');
+		const sessionUsernameDisplay = document.getElementById('session-username-display');
+		const switchAccountBtn = document.getElementById('switch-account-btn');
+		const accessHelpSection = document.getElementById('access-help-section');
 		const userInp = document.getElementById('login-user');
 		const passInp = document.getElementById('login-pass');
 		const errEl = document.getElementById('login-err');
@@ -850,8 +983,6 @@
 
 		const cardSandbox = document.getElementById('mode-sandbox');
 		const cardStory = document.getElementById('mode-story');
-		const sessionBanner = document.getElementById('session-banner');
-		const sessionUser = document.getElementById('session-user');
 		const teleBotBtn = document.getElementById('tele-bot-btn');
 
 		const quickSandboxBtn = document.getElementById('quick-launch-sandbox');
@@ -871,6 +1002,103 @@
 		}
 		loadConfig();
 
+		function updateLaunchButtonText() {
+			if (hasActiveSession) {
+				if (selectedMode === 'story') {
+					launchText.textContent = 'LAUNCH STORY MODE';
+				} else {
+					launchText.textContent = 'LAUNCH SANDBOX';
+				}
+			} else {
+				if (selectedMode === 'story') {
+					launchText.textContent = 'LOGIN & LAUNCH STORY';
+				} else {
+					launchText.textContent = 'LOGIN & LAUNCH SANDBOX';
+				}
+			}
+		}
+
+		// When session is active: completely hide credentials (no username & password needed!)
+		function applyActiveSession(username) {
+			hasActiveSession = true;
+			activeUsername = username || 'Operator';
+
+			// Hide username and password inputs completely
+			if (credentialsFields) {
+				credentialsFields.style.display = 'none';
+			}
+
+			// Remove HTML5 required constraint so form won't block submission
+			if (userInp) {
+				userInp.removeAttribute('required');
+				userInp.value = activeUsername;
+			}
+			if (passInp) {
+				passInp.removeAttribute('required');
+				passInp.value = '';
+			}
+
+			// Show active session badge
+			if (activeSessionCard) {
+				activeSessionCard.style.display = 'block';
+			}
+			if (sessionUsernameDisplay) {
+				sessionUsernameDisplay.textContent = activeUsername;
+			}
+
+			// Hide Telegram prompt section (active user already has access!)
+			if (accessHelpSection) {
+				accessHelpSection.style.display = 'none';
+			}
+
+			if (errEl) {
+				errEl.style.display = 'none';
+			}
+
+			updateLaunchButtonText();
+		}
+
+		// Switch account or show login fields
+		function showLoginForm() {
+			hasActiveSession = false;
+
+			// Show username & password fields
+			if (credentialsFields) {
+				credentialsFields.style.display = 'block';
+			}
+
+			// Restore required validation
+			if (userInp) {
+				userInp.setAttribute('required', 'required');
+				userInp.value = '';
+			}
+			if (passInp) {
+				passInp.setAttribute('required', 'required');
+				passInp.value = '';
+			}
+
+			// Hide active session card
+			if (activeSessionCard) {
+				activeSessionCard.style.display = 'none';
+			}
+
+			// Restore Telegram prompt section
+			if (accessHelpSection) {
+				accessHelpSection.style.display = 'block';
+			}
+
+			updateLaunchButtonText();
+			if (userInp) {
+				userInp.focus();
+			}
+		}
+
+		if (switchAccountBtn) {
+			switchAccountBtn.addEventListener('click', () => {
+				showLoginForm();
+			});
+		}
+
 		// Mode switching function
 		function setMode(mode) {
 			selectedMode = mode;
@@ -878,7 +1106,6 @@
 				cardStory.classList.add('active');
 				cardSandbox.classList.remove('active');
 				launchBtn.classList.add('story-theme');
-				launchText.textContent = 'ENTER STORY MODE';
 				launchIcon.textContent = '🎮';
 				modeHint.textContent = 'Story Mode selected';
 				modeHint.style.color = 'var(--cyan-accent)';
@@ -886,11 +1113,11 @@
 				cardSandbox.classList.add('active');
 				cardStory.classList.remove('active');
 				launchBtn.classList.remove('story-theme');
-				launchText.textContent = 'ENTER SANDBOX MODE';
 				launchIcon.textContent = '⚡';
 				modeHint.textContent = 'Sandbox selected';
 				modeHint.style.color = 'var(--amber-bright)';
 			}
+			updateLaunchButtonText();
 		}
 
 		cardSandbox.addEventListener('click', () => setMode('sandbox'));
@@ -907,25 +1134,68 @@
 			});
 		}
 
-		// Check if already authenticated via session API
+		// Check if already authenticated via server injection, API, or local storage
 		async function checkExistingSession() {
+			// 1. Instant check from server injection (zero flicker)
+			if (window.__INITIAL_SESSION__) {
+				if (window.__INITIAL_SESSION__.authenticated) {
+					const user = window.__INITIAL_SESSION__.user || 'Operator';
+					localStorage.setItem('sparky_auth', '1');
+					localStorage.setItem('sparky_user', user);
+					applyActiveSession(user);
+					return;
+				} else {
+					// Server verified: no active auth cookie
+					localStorage.removeItem('sparky_auth');
+					localStorage.removeItem('sparky_user');
+					showLoginForm();
+					return;
+				}
+			}
+
+			// 2. Fetch session API
 			try {
 				const res = await fetch('/api/session');
 				if (res.ok) {
 					const data = await res.json();
 					if (data.authenticated && data.user) {
-						if (sessionBanner) sessionBanner.style.display = 'flex';
-						if (sessionUser) sessionUser.textContent = data.user;
+						localStorage.setItem('sparky_auth', '1');
+						localStorage.setItem('sparky_user', data.user);
+						applyActiveSession(data.user);
+						return;
+					} else {
+						localStorage.removeItem('sparky_auth');
+						localStorage.removeItem('sparky_user');
+						showLoginForm();
+						return;
 					}
 				}
 			} catch (e) {}
+
+			// 3. Local fallback check
+			const savedUser = localStorage.getItem('sparky_user');
+			const savedAuth = localStorage.getItem('sparky_auth');
+			if (savedAuth === '1' && savedUser) {
+				applyActiveSession(savedUser);
+			} else {
+				showLoginForm();
+			}
 		}
 		checkExistingSession();
 
-		// Handle Form Launch (MongoDB authentication)
+		// Handle Launch (1-click launch if session active, or verify credentials if logging in)
 		async function handleLaunch(targetMode) {
 			if (targetMode) setMode(targetMode);
 
+			// If session is active: NO USERNAME OR PASSWORD NEEDED! Launch immediately!
+			if (hasActiveSession) {
+				launchBtn.disabled = true;
+				launchText.textContent = 'STARTING ' + (selectedMode === 'story' ? 'STORY' : 'SANDBOX') + '...';
+				window.location.href = targetUrls[selectedMode];
+				return;
+			}
+
+			// Otherwise, validate user inputs
 			const u = (userInp ? userInp.value : '').trim();
 			const p = passInp ? passInp.value : '';
 
@@ -951,9 +1221,8 @@
 				const data = await res.json();
 
 				if (data.success) {
-					document.cookie = 'sparky_auth=1; Path=/; Max-Age=259200; SameSite=Lax';
-					sessionStorage.setItem('sparky_auth', '1');
-					sessionStorage.setItem('sparky_user', data.user);
+					localStorage.setItem('sparky_auth', '1');
+					localStorage.setItem('sparky_user', data.user);
 					window.location.href = targetUrls[selectedMode];
 					return;
 				} else {
@@ -983,13 +1252,22 @@
 			handleLaunch();
 		});
 
-		// Quick Launch Buttons
+		// Quick Launch Buttons (1-click direct mode access)
 		quickSandboxBtn.addEventListener('click', () => {
 			handleLaunch('sandbox');
 		});
 
 		quickStoryBtn.addEventListener('click', () => {
 			handleLaunch('story');
+		});
+
+		// Clear localStorage on logout click
+		const logoutLinks = document.querySelectorAll('.logout-btn-link, .logout-link');
+		logoutLinks.forEach(link => {
+			link.addEventListener('click', () => {
+				localStorage.removeItem('sparky_auth');
+				localStorage.removeItem('sparky_user');
+			});
 		});
 
 		// Particle Canvas Animation
