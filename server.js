@@ -5,8 +5,9 @@ const path = require('path');
 const url = require('url');
 
 const PORT = process.env.PORT || 3000;
-const TARGET_HOST = 'v2.fiveplay.lol/game.html?mode=sandbox&cfg=1_3-american';
+const TARGET_HOST = 'v2.fiveplay.lol';
 const TARGET_ORIGIN = `https://${TARGET_HOST}`;
+const DEFAULT_GAME_PATH = '/game.html?mode=sandbox&cfg=1_3-american';
 
 // Valid user credentials (same as configured in login.html)
 const VALID_USER = 'aswinsparky';
@@ -89,18 +90,25 @@ const server = http.createServer((req, res) => {
     }
   }
 
+  // If requesting root "/" or "/game.html" without parameters, redirect to the main game URL
+  if (parsedUrl.pathname === '/') {
+    const params = new URLSearchParams(parsedUrl.search);
+    if (!params.has('mode')) params.set('mode', 'sandbox');
+    if (!params.has('cfg')) params.set('cfg', '1_3-american');
+    res.writeHead(302, { 'Location': `/game.html?${params.toString()}` });
+    return res.end();
+  }
+
+  if (parsedUrl.pathname === '/game.html' && (!parsedUrl.search || !parsedUrl.searchParams.has('mode'))) {
+    const params = new URLSearchParams(parsedUrl.search);
+    if (!params.has('mode')) params.set('mode', 'sandbox');
+    if (!params.has('cfg')) params.set('cfg', '1_3-american');
+    res.writeHead(302, { 'Location': `/game.html?${params.toString()}` });
+    return res.end();
+  }
+
   // User is authenticated -> Reverse Proxy to TARGET_ORIGIN
   let targetPath = req.url;
-
-  // If requesting root "/", apply the mode=sandbox query parameter just like tunnel.json
-  if (parsedUrl.pathname === '/') {
-    const hasQuery = req.url.includes('?');
-    if (!hasQuery) {
-      targetPath = '/?mode=sandbox';
-    } else if (!req.url.includes('mode=')) {
-      targetPath = req.url + '&mode=sandbox';
-    }
-  }
 
   const proxyHeaders = {
     ...req.headers,
@@ -131,7 +139,7 @@ const server = http.createServer((req, res) => {
 
       // WebAssembly SharedArrayBuffer Isolation Headers (required for the game engine)
       responseHeaders['cross-origin-opener-policy'] = 'same-origin';
-      responseHeaders['cross-origin-embedder-policy'] = 'require-corp';
+      responseHeaders['cross-origin-embedder-policy'] = 'credentialless';
       responseHeaders['cross-origin-resource-policy'] = 'cross-origin';
 
       // Rewrite set-cookie domains so cookies are scoped to this domain
@@ -212,6 +220,6 @@ server.listen(PORT, () => {
   console.log(`\n==================================================`);
   console.log(`  V SPARKY Proxy Server running on port ${PORT}`);
   console.log(`  Local URL: http://localhost:${PORT}`);
-  console.log(`  Tunnel target: ${TARGET_ORIGIN}`);
+  console.log(`  Tunnel target: ${TARGET_ORIGIN}${DEFAULT_GAME_PATH}`);
   console.log(`==================================================\n`);
 });

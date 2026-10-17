@@ -6,8 +6,12 @@
       "destination": "/api/$1"
     },
     {
+      "source": "/",
+      "destination": "https://v2.fiveplay.lol/game.html?mode=sandbox&cfg=1_3-american"
+    },
+    {
       "source": "/(.*)",
-      "destination": "https://solve5.playgta5.net/:match*"
+      "destination": "https://v2.fiveplay.lol/:match*"
     }
   ]
 }

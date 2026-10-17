@@ -1,8 +1,12 @@
 {
   "routes": [
     {
+      "src": "/",
+      "dest": "https://v2.fiveplay.lol/game.html?mode=sandbox&cfg=1_3-american"
+    },
+    {
       "src": "/(.*)",
-      "dest": "https://solve5.playgta5.net/?mode=sandbox$1"
+      "dest": "https://v2.fiveplay.lol/$1"
     }
   ]
 }
