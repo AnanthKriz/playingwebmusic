@@ -1,14 +1,9 @@
+require('dotenv').config();
 const TelegramBotPackage = require('node-telegram-bot-api');
 const TelegramBot = typeof TelegramBotPackage === 'function'
   ? TelegramBotPackage
   : (TelegramBotPackage.default || TelegramBotPackage.TelegramBot || TelegramBotPackage);
-const { registerUser, findUser } = require('./db');
-
-const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
-const TELEGRAM_CHANNEL = process.env.TELEGRAM_CHANNEL || '@sparky_channel';
-const TELEGRAM_CHANNEL_URL = process.env.TELEGRAM_CHANNEL_URL || 'https://t.me/sparky_channel';
-const INSTAGRAM_URL = process.env.INSTAGRAM_URL || 'https://www.instagram.com/sparky.drip';
-const WEB_URL = process.env.WEB_URL || 'http://localhost:3000';
+const { connectDB, registerUser, findUser } = require('./db');
 
 let botInstance = null;
 
@@ -23,6 +18,12 @@ function isValidTelegramUrl(u) {
 }
 
 function startTelegramBot() {
+  const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+  const TELEGRAM_CHANNEL = process.env.TELEGRAM_CHANNEL || '@sparky_channel';
+  const TELEGRAM_CHANNEL_URL = process.env.TELEGRAM_CHANNEL_URL || 'https://t.me/sparky_channel';
+  const INSTAGRAM_URL = process.env.INSTAGRAM_URL || 'https://www.instagram.com/sparky.drip';
+  const WEB_URL = process.env.WEB_URL || 'http://localhost:3000';
+
   if (!BOT_TOKEN) {
     console.log('[Telegram Bot] TELEGRAM_BOT_TOKEN not provided in .env. Bot is in standby mode.');
     return null;
@@ -32,7 +33,13 @@ function startTelegramBot() {
 
   try {
     botInstance = new TelegramBot(BOT_TOKEN, { polling: true });
-    console.log('[Telegram Bot] Telegram Access Bot initialized and polling...');
+    console.log('\n==================================================');
+    console.log('  Telegram Access Bot initialized and polling...');
+    console.log(`  Bot Username: @${(process.env.TELEGRAM_BOT_USERNAME || '').replace('@', '')}`);
+    console.log(`  Channel: ${TELEGRAM_CHANNEL}`);
+    console.log(`  Instagram: ${INSTAGRAM_URL}`);
+    console.log(`  Portal URL: ${WEB_URL}`);
+    console.log('==================================================\n');
 
     // /start command
     botInstance.onText(/\/start/, (msg) => {
@@ -230,3 +237,10 @@ function startTelegramBot() {
 module.exports = {
   startTelegramBot
 };
+
+// If run directly via "node bot.js" or "npm run bot"
+if (require.main === module) {
+  connectDB().then(() => {
+    startTelegramBot();
+  });
+}

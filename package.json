@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "bot": "node -e \"require('dotenv').config(); require('./bot').startTelegramBot();\""
+    "bot": "node bot.js"
   },
   "keywords": [],
   "author": "",
